@@ -27,13 +27,13 @@ Opening a spreadsheet
 ```ruby
 require 'roo'
 
-xlsx = Roo::Spreadsheet.open('./new_prices.xlsx')
-xlsx = Roo::Excelx.new("./new_prices.xlsx")
+ss = Roo::Spreadsheet.open('./new_prices.xlsx')
+ss = Roo::Excelx.new("./new_prices.xlsx")
 
 # Use the extension option if the extension is ambiguous.
-xlsx = Roo::Spreadsheet.open('./rails_temp_upload', extension: :xlsx)
+ss = Roo::Spreadsheet.open('./rails_temp_upload', extension: :xlsx)
 
-xlsx.info
+ss.info
 # => Returns basic info about the spreadsheet file
 ```
 
@@ -42,19 +42,19 @@ xlsx.info
 ### Working with sheets
 
 ```ruby
-ods.sheets
+ss.sheets
 # => ['Info', 'Sheet 2', 'Sheet 3']   # an Array of sheet names in the workbook
 
-ods.sheet('Info').row(1)
-ods.sheet(0).row(1)
+ss.sheet('Info').row(1)
+ss.sheet(0).row(1)
 
 # Set the last sheet as the default sheet.
-ods.default_sheet = ods.sheets.last
-ods.default_sheet = ods.sheets[2]
-ods.default_sheet = 'Sheet 3'
+ss.default_sheet = ss.sheets.last
+ss.default_sheet = ss.sheets[2]
+ss.default_sheet = 'Sheet 3'
 
 # Iterate through each sheet
-ods.each_with_pagename do |name, sheet|
+ss.each_with_pagename do |name, sheet|
   p sheet.row(1)
 end
 ```
@@ -64,23 +64,23 @@ end
 Roo uses Excel's numbering for rows, columns and cells, so `1` is the first index, not `0` as it is in an ``Array``
 
 ```ruby
-sheet.row(1)
+ss.row(1)
 # returns the first row of the spreadsheet.
 
-sheet.column(1)
+ss.column(1)
 # returns the first column of the spreadsheet.
 ```
 
 Almost all methods have an optional argument `sheet`. If this parameter is omitted, the default_sheet will be used.
 
 ```ruby
-sheet.first_row(sheet.sheets[0])
+ss.first_row(ss.sheets[0])
 # => 1             # the number of the first row
-sheet.last_row
+ss.last_row
 # => 42            # the number of the last row
-sheet.first_column
+ss.first_column
 # => 1             # the number of the first column
-sheet.last_column
+ss.last_column
 # => 10            # the number of the last column
 ```
 
@@ -89,13 +89,13 @@ sheet.last_column
 You can access the top-left cell in the following ways
 
 ```ruby
-s.cell(1,1)
-s.cell('A',1)
-s.cell(1,'A')
-s.a1
+ss.cell(1,1)
+ss.cell('A',1)
+ss.cell(1,'A')
+ss.a1
 
 # Access the second sheet's top-left cell.
-s.cell(1,'A',s.sheets[1])
+ss.cell(1,'A',s.sheets[1])
 ```
 
 #### Querying a spreadsheet
@@ -104,29 +104,29 @@ Use ``each`` to iterate over each row.
 If each is given a hash with the names of some columns, then each will generate a hash with the columns supplied for each row.
 
 ```ruby
-sheet.each(id: 'ID', name: 'FULL_NAME') do |hash|
+ss.each(id: 'ID', name: 'FULL_NAME') do |hash|
   puts hash.inspect
   # => { id: 1, name: 'John Smith' }
 end
 ```
 
-Use ``sheet.parse`` to return an array of rows. Column names can be a ``String`` or a ``Regexp``.
+Use ``ss.parse`` to return an array of rows. Column names can be a ``String`` or a ``Regexp``.
 
 ```ruby
-sheet.parse(id: /UPC|SKU/, qty: /ATS*\sATP\s*QTY\z/)
+ss.parse(id: /UPC|SKU/, qty: /ATS*\sATP\s*QTY\z/)
 # => [{:id => 727880013358, :qty => 12}, ...]
 ```
 
 Use the ``:header_search`` option to locate the header row and assign the header names.
 
 ```ruby
-sheet.parse(header_search: [/UPC*SKU/,/ATS*\sATP\s*QTY\z/])
+ss.parse(header_search: [/UPC*SKU/,/ATS*\sATP\s*QTY\z/])
 ```
 
 Use the ``:clean`` option to strip out control characters and surrounding white space.
 
 ```ruby
-sheet.parse(clean: true)
+ss.parse(clean: true)
 ```
 
 ### Exporting spreadsheets
@@ -134,10 +134,10 @@ Roo has the ability to export sheets using the following formats. It
 will only export the ``default_sheet``.
 
 ```ruby
-sheet.to_csv
-sheet.to_matrix
-sheet.to_xml
-sheet.to_yaml
+ss.to_csv
+ss.to_matrix
+ss.to_xml
+ss.to_yaml
 ```
 
 ### Excel (xlsx and xlsm) Support
